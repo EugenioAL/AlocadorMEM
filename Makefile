@@ -1,20 +1,19 @@
 CC = g++
 CFLAGS = -Wall -g
  
-# ****************************************************
-# Targets needed to bring the executable up to date
-
-main: main.o 
-		$(CC) -o main main.cpp
+all: main
  
-# The main.o target can be written more simply
-
-main.o: main.cpp
-		$(CC) -c main.cpp
-
+main: main.o aloca.o
+	$(CC) -o main main.o aloca.o
+ 
+main.o: main.cpp aloca.h
+	$(CC) -o main.o main.cpp -c -W -Wall -ansi -pedantic
+ 
+aloca.o: aloca.cpp aloca.h
+	$(CC) -o aloca.o aloca.cpp -c -W -Wall -ansi -pedantic
 
 run:
-		./main
-
-clear:
-		rm main
+	./main
+ 
+clean:
+	rm -rf *.o *~ main
