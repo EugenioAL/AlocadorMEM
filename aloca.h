@@ -14,13 +14,24 @@ using namespace std;
 class Node{
 	public:
 		char* addr;
-		unsigned short int tamanho;
+		int tamanho;
 
-		Node(char* addre, unsigned short int tam){
+		Node(char* addre, int tam){
 				addr = addre;
 				tamanho = tam;
 		}
 
+};
+
+class Data{
+	public:
+	int id;
+	char* pont;
+
+	Data(int id, char* pont){
+		id = id;
+		pont = pont;
+	}
 };
 
 class meualoc{
@@ -42,7 +53,7 @@ class meualoc{
 
 		void initListaDeVazia();
 
-		void insertListaDeVazias(Node tmp);
+		void insertListaDeVazias(Node* tmp);
 
 		void fillMemory();
 
@@ -63,6 +74,16 @@ class meualoc{
 		void imprimeDados();
 
 		~meualoc();
+
+		int tamListaVazios();
+
+		int tamLivres();
+
+		int mediaTamBlocos();
 };
+
+void string_to_vet_char(string source, char data[],int tam);
+
+
 
 #endif

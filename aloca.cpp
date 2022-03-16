@@ -1,4 +1,7 @@
+#include <cstring>
+#include <fstream>
 #include <iostream>
+#include <algorithm>
 #include <cstdlib>
 #include <list>
 #include "aloca.h"
@@ -27,43 +30,30 @@ void meualoc::setMeuAloc(int tamanho,int politica){
 	fillMemory();
 }
 void meualoc::initListaDeVazia(){
-    Node tmp(memoria,tamanhoMemoria);
+    Node *tmp;
+	tmp= new Node(memoria,tamanhoMemoria);
     insertListaDeVazias(tmp);
 	posLista = listaLivres.begin();
 }
 
-void meualoc::insertListaDeVazias(Node tmp){
+void meualoc::insertListaDeVazias(Node* tmp){
 	list<Node>::iterator it;
-	Node novo = tmp;
 	it = listaLivres.begin();
 	int flag = 0;
-	if(listaLivres.size() <=1){
-		if(listaLivres.size() == 0){
-			listaLivres.push_front(novo);
-			cout << "0\n";
-		}
-		else if(listaLivres.size() == 1){
-			
-			if(&(novo.addr) > &(it->addr)){
-				listaLivres.push_front(novo);
-			}
-			else{
-				listaLivres.push_back(novo);
-			}
-		}
+	if(listaLivres.size() == 0){
+		listaLivres.push_front(*tmp);
 	}
 	else{
 		int i = 0;
-		while(flag == 0 && i < (int)listaLivres.size()){
-			if(novo.addr < it->addr){
-				listaLivres.insert(it,novo);
-				flag =1;
+		while(it != listaLivres.end() && flag == 0){
+			if(tmp->addr < it->addr){
+				listaLivres.insert(it,*tmp);
+				flag = 1;
 			}
 			it++;
-			i++;
 		}
 		if(flag == 0){
-			listaLivres.insert(it,novo);
+			listaLivres.push_back(*tmp);
 		}
 	}
 }
@@ -133,7 +123,6 @@ char *meualoc::aloca(unsigned short int tamanho){
 				if((it->tamanho) >= espaco){
 					tmp = it;
 					flag1 = 't';
-					cout << "tam lista " << it->tamanho << endl;
 				}
 				it++;
 			}
@@ -142,7 +131,6 @@ char *meualoc::aloca(unsigned short int tamanho){
 			int i = 0;
 			it2 = posLista;
 			while(i < (int)listaLivres.size() && flag1 == 'f'){
-				cout << "it tam " << it2->tamanho << endl;
 				if(it2->tamanho >= espaco){
 					tmp = it2;
 					flag1 = 't';
@@ -204,8 +192,6 @@ char* meualoc::verifica(char* ponteiro,int posicao){
 		
 		//Libera o espaco ocupado na posicao, de forma analoga ao free. Ou seja, liberar toda a memoria alocada para este ponteiro na funcao aloca.
 int meualoc::libera(char* ponteiro){
-	cout << &ponteiro << endl;
-	cout << ponteiro-4 << endl;
     char* tmp = ponteiro - 4;
 	unsigned short int mval,lval;
 	if(verifica(ponteiro,0) != NULL){
@@ -214,8 +200,8 @@ int meualoc::libera(char* ponteiro){
 		for(int i = 0; i< 4; i++){
 			tmp[i] = 'F';
 		}
-		cout << &tmp << endl;
-		Node novo(tmp,mval+lval + 4);
+		Node* novo;
+		novo = new Node(tmp,mval+lval + 4);
 		insertListaDeVazias(novo);
 		return 1;
 	}
@@ -230,15 +216,41 @@ void meualoc::imprimeDados(){
 	list<Node>::iterator it;
 	it = listaLivres.begin();
 	int i = 0;
+	char **pp;
 	for(it = listaLivres.begin(); it!=listaLivres.end();it++){
 		//printa os numeros os valores da lista
-		cout << "Tamanho: " << it->tamanho <<"\t" << "Cont: "<< it->addr << endl;
-		cout <<"Posicao: " << i << "\tTamanho: " << it->tamanho <<"\t" << "Cont: "<< &(it->addr) << endl;
+		pp = &it->addr;
+		cout <<"Posicao: " << i << "\tTamanho: " << it->tamanho <<"\t" << "Cont: "<< pp << endl;
 		i++;
 	}
+}
+
+int meualoc::tamListaVazios(){
+	return listaLivres.size();
+}
+
+int meualoc::tamLivres(){
+	list<Node>::iterator it;
+	int total = 0;
+	for(it = listaLivres.begin(); it!= listaLivres.end();it++){
+		total += it->tamanho;
+	}
+	return total;
+}
+
+int meualoc::mediaTamBlocos(){
+	int media;
+	media = tamLivres()/tamListaVazios();
+	return media;
 }
 
 meualoc::~meualoc(){
 	free(memoria);
 	cout << "Alocador destruido"<< endl;
+}
+
+void string_to_vet_char(string source, char data[],int tam){//passa uma string para um vetor de char.
+    for(int i = 0; i < tam; i++){
+        data[i] = source[i];
+    }
 }

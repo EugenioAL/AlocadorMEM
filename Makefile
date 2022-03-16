@@ -1,19 +1,19 @@
 CC = g++
 CFLAGS = -Wall -g
  
-all: main
+all: bc
  
-main: main.o aloca.o
-	$(CC) -o main main.o aloca.o
+bc: bc.o aloca.o
+	$(CC) -o bc bc.o aloca.o
  
-main.o: main.cpp aloca.h
-	$(CC) -o main.o main.cpp -c -W -Wall -ansi -pedantic
+bc.o: bc.cpp aloca.h
+	$(CC) -o bc.o bc.cpp -c -W -Wall -ansi -pedantic
  
 aloca.o: aloca.cpp aloca.h
 	$(CC) -o aloca.o aloca.cpp -c -W -Wall -ansi -pedantic
 
 run:
-	./main
+	./bc workloadmem0 > text.txt
  
 clean:
-	rm -rf *.o *~ main
+	rm -rf *.o *~ bc
